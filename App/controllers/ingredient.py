@@ -1,8 +1,8 @@
 from App.models import Ingredient
 from App.database import db
 
-def create_ingredient(name, quantity, user_id, image):
-    new_ingredient = Ingredient(name=name, quantity=quantity, user_id=user_id, image = image)
+def create_ingredient(name, quantity, user_id):
+    new_ingredient = Ingredient(name=name, quantity=quantity, user_id=user_id)
     db.session.add(new_ingredient)
     db.session.commit()
     return new_ingredient

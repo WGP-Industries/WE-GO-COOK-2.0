@@ -1,8 +1,8 @@
 from App.models import RecipeIngredients
 from App.database import db
 
-def add_ingredient_to_recipe(recipe_id, name, quantity, image):
-    new_ingredient = RecipeIngredients(recipe_id=recipe_id, name=name, quantity=quantity, image= image)
+def add_ingredient_to_recipe(recipe_id, name, quantity):
+    new_ingredient = RecipeIngredients(recipe_id=recipe_id, name=name, quantity=quantity)
     db.session.add(new_ingredient)
     db.session.commit()
     return new_ingredient
