@@ -5,7 +5,6 @@ from App.controllers import create_user, initialize
 index_views = Blueprint('index_views', __name__, template_folder='../templates')
 
 @index_views.route('/', methods=['GET'])
-@jwt_required(optional=True)
 def index_page():
     user = current_user if current_user else None
     is_authenticated = user is not None
