@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory, jsonify
 from flask_jwt_extended import jwt_required, current_user
 from App.controllers import create_user, initialize
+from App.models import recipe, recipeIngredient
 
 index_views = Blueprint('index_views', __name__, template_folder='../templates')
 
@@ -10,13 +11,11 @@ def index_page():
     user = current_user if current_user else None
     is_authenticated = user is not None
     recipes = get_all_recipes()
-    recipes_json = [r.get_json() for r in recipes]
     return render_template(
         'index.html',
         current_user=user,
         is_authenticated=is_authenticated,
         recipes=recipes,
-        recipes_json = recipes_json
     )
 
 @index_views.route('/init', methods=['GET'])
