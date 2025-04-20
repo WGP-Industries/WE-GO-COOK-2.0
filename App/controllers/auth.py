@@ -3,26 +3,6 @@ from flask_jwt_extended import create_access_token, jwt_required, JWTManager, ge
 from App.models import User
 
 def login(username, password):
-<<<<<<< HEAD
-    user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        return create_access_token(identity=str(user.id))  # ✅ Store user.id as string
-    return None
-
-def setup_jwt(app):
-    jwt = JWTManager(app)
-
-    @jwt.user_identity_loader
-    def user_identity_lookup(identity):
-        return identity  # ✅ no lookup here
-
-    @jwt.user_lookup_loader
-    def user_lookup_callback(_jwt_header, jwt_data):
-        identity = jwt_data["sub"]
-        return User.query.get(int(identity))  # ✅ cast back to int
-
-    return jwt
-=======
   user = User.query.filter_by(username=username).first()
   if user and user.check_password(password):
     return create_access_token(identity=str(user.id))
@@ -41,7 +21,6 @@ def setup_jwt(app):
   def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
     return User.query.get(int(identity))
->>>>>>> 2f67087418dbf7099b8153d59d01a86a0b869aac
 
 
 
