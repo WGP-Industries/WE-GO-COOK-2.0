@@ -7,7 +7,7 @@ class Recipe(db.Model):
     instructions = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    ingredients = db.relationship('RecipeIngredient', backref='recipe', lazy=True)
+    ingredients = db.relationship('RecipeIngredients', backref='recipe', lazy=True)
 
     def get_json(self):
         return {
