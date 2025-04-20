@@ -6,12 +6,7 @@ class Recipe(db.Model):
     image = db.Column(db.String(100), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
 
-<<<<<<< HEAD
-    # One recipe can have many ingredients
-    ingredients = db.relationship('RecipeIngredient', backref='recipe', lazy=True)
-=======
     ingredients = db.relationship('RecipeIngredients', backref='recipe', lazy=True)
->>>>>>> 2f67087418dbf7099b8153d59d01a86a0b869aac
 
     user_id      = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
