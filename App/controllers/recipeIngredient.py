@@ -1,17 +1,17 @@
-from App.models import RecipeIngredients
+from App.models import RecipeIngredient
 from App.database import db
 
 def add_ingredient_to_recipe(recipe_id, name, quantity, image):
-    new_ingredient = RecipeIngredients(recipe_id=recipe_id, name=name, quantity=quantity, image= image)
+    new_ingredient = RecipeIngredient(recipe_id=recipe_id, name=name, quantity=quantity, image= image)
     db.session.add(new_ingredient)
     db.session.commit()
     return new_ingredient
 
 def get_ingredient(id):
-    return RecipeIngredients.query.get(id)
+    return RecipeIngredient.query.get(id)
 
 def get_ingredients_by_recipe(recipe_id):
-    return RecipeIngredients.query.filter_by(recipe_id=recipe_id).all()
+    return RecipeIngredient.query.filter_by(recipe_id=recipe_id).all()
 
 def get_ingredients_by_recipe_json(recipe_id):
     ingredients = get_ingredients_by_recipe(recipe_id)

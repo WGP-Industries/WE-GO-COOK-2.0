@@ -9,6 +9,12 @@ class Recipe(db.Model):
 
     ingredients = db.relationship('RecipeIngredient', backref='recipe', lazy=True)
 
+    def __init__(self, title, image, instructions, user_id):
+        self.title = title
+        self.image = image
+        self.instructions = instructions
+        self.user_id = user_id
+        
     def get_json(self):
         return {
             'id': self.id,
