@@ -63,5 +63,12 @@
         <input type="hidden" name="q" value="{{ q }}">
       </p>
     </form>
+  {% else %}
+    <div class="meme-container">
+      <div class="meme-card">
+        <img src="https://media.makeameme.org/created/why-is-there-7e933763f7.jpg" alt="Why is there" />
+      </div>
+    </div>
+  {% endif %}
  
 {% endblock %}
