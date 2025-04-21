@@ -49,4 +49,19 @@
         </div>
       </form>
     </aside>
+
+
+    <form method="get" action="{{ url_for('index_views.index_page') }}" style="display: block; visibility: visible; opacity: 1; z-index: 999;">
+      <p style="color: white;">
+        <strong>Sort Recipes:</strong>
+        <select class= "sort-recipes-select" name="sort_by" onchange="this.form.submit()" style="border-color: #EC5228; display: inline-block; background: rgba(255, 178, 0, 0.6); color: black; z-index: 999;">
+          <option value="id_asc" {% if sort_by == 'id_asc' %}selected{% endif %}>ID ↑(asc)</option>
+          <option value="id_desc" {% if sort_by == 'id_desc' %}selected{% endif %}>ID ↓(desc)</option>
+          <option value="title_asc" {% if sort_by == 'title_asc' %}selected{% endif %}>Title A–Z</option>
+          <option value="title_desc" {% if sort_by == 'title_desc' %}selected{% endif %}>Title Z–A</option>
+        </select>
+        <input type="hidden" name="q" value="{{ q }}">
+      </p>
+    </form>
+ 
 {% endblock %}
