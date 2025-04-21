@@ -90,3 +90,25 @@ def show_ingredient_update_form(id):
         q=q,
         sort_by=sort_by
     )
+
+
+@ingredient_views.route('/updateIngredient/<int:id>', methods=['POST'])
+@jwt_required()
+def update_ingredient(id):
+    ingredient = get_user_ingredient(id)
+
+    page = int(request.form.get("page", 1))
+    q = request.form.get("q", '')
+    sort_by = request.form.get("sort_by", default='title_asc')
+
+    if not ingredient or ingredient.user_id != current_user.id:
+        return redirect(url_for('ingredient_views.ingredient_page'))
+
+    new_name = request.form.get('name')
+    new_quantity = request.form.get('quantity')
+    new_unit = request.form.get('unit')
+    new_image = request.form.get('image')
+    update_user_ingredient(ingredient.id, new_name, new_quantity, new_unit, new_image)
+
+    flash("Ingredient updated successfully", "success")
+    return redirect(url_for('ingredient_views.ingredient_page', page=page, q=q, sort_by=sort_by))
