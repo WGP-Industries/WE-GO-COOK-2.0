@@ -28,6 +28,92 @@ body::before {
   z-index: 1;
 }
 
+.page-block {
+  padding: 5px;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.meme-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.meme-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.meme-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.search-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.bi-search {
+  font-size: 15px;
+  color: #EB5B00;
+}
+
+.welcome-note {
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #D91656;
+  padding: 10px 15px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.search-form input[type="search"] {
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  width: 200px;
+}
+
+.search-bar {
+  background: none;
+  border-color: none;
+  border: none;
+}
+
+.search-bar:hover {
+  background: none;
+  border-color: none;
+  border: none;
+}
+
+a.brand-logo {
+  text-decoration: none;
+  color: inherit;
+}
+
+#recipe-toggle {
+  display: none;
+}
+
+.recipe-aside {
+  display: none;
+}
+
+
 
 button,
 .recipe-btn,
