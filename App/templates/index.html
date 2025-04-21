@@ -51,6 +51,7 @@
     </aside>
 
 
+
     <form method="get" action="{{ url_for('index_views.index_page') }}" style="display: block; visibility: visible; opacity: 1; z-index: 999;">
       <p style="color: white;">
         <strong>Sort Recipes:</strong>
@@ -63,6 +64,107 @@
         <input type="hidden" name="q" value="{{ q }}">
       </p>
     </form>
+    
+
+    {% for recipe in recipes %} 
+      <div class="meal-card">
+        <div class="meal-img">
+          <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+        </div>
+        <div class="meal-name">
+          <h3>{{ recipe.title }}</h3>
+          <p class="meal-ID">ID: {{ recipe.id }}</p>
+          <div class="button-container">
+            <form method="GET" action="{{ url_for('index_views.show_update_form', id=recipe.id) }}">
+              <input type="hidden" name="page" value="{{ recipes.page }}">
+              <input type="hidden" name="q" value="{{ q }}">
+              <input type="hidden" name="sort_by" value="{{ sort_by }}">
+              <button class="recipe-btn" type="submit">✏️ Edit/View Recipe</button>
+            </form>
+            
+            <form method="GET" action="{{ url_for('index_views.delete_user_recipe', id=recipe.id) }}">
+              <input type="hidden" name="page" value="{{ recipes.page }}">
+              <input type="hidden" name="q" value="{{ q }}">
+              <input type="hidden" name="sort_by" value="{{ sort_by }}">
+              <button class="recipe-btn" type="submit">🗑 Delete Recipe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    {% if recipes.pages > 0 %}
+    <div class="pagination">
+      <ul>
+        {% if recipes.has_prev %}
+          <li><a class="pagination-link" href="{{ url_for('index_views.index_page', page=recipes.prev_num, q=q, sort_by=sort_by) }}"><i class="bi bi-arrow-left"></i></a></li>
+        {% else %}
+          <li><span class="pagination-link disabled"><i class="bi bi-arrow-left"></i></span></li>
+        {% endif %}
+
+        {% for page_num in recipes.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+          {% if page_num %}
+            {% if recipes.page == page_num %}
+              <li><span class="pagination-link active-page">{{ page_num }}</span></li>
+            {% else %}
+              <li><a class="pagination-link" href="{{ url_for('index_views.index_page', page=page_num, q=q, sort_by=sort_by) }}">{{ page_num }}</a></li>
+            {% endif %}
+          {% else %}
+            <li><span class="pagination-link disabled">…</span></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if recipes.has_next %}
+          <li><a class="pagination-link" href="{{ url_for('index_views.index_page', page=recipes.next_num, q=q, sort_by=sort_by) }}"><i class="bi bi-arrow-right"></i></a></li>
+        {% else %}
+          <li><span class="pagination-link disabled"><i class="bi bi-arrow-right"></i></span></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% else %}
+      <p style="color: white; text-align: center;">No recipes found for "{{ q }}".</p>
+    {% endif %}
+
+    {% if recipe_to_edit %}
+      <aside class="recipe-aside" style="display: block;">
+        <div class="recipe-meal-img">
+          <img src="{{ recipe_to_edit.image }}" alt="Recipe Image">
+        </div>
+
+        <form method="POST" action="{{ url_for('index_views.update_recipe', id=recipe_to_edit.id) }}">
+          <input type="hidden" name="page" value="{{ recipes.page }}">
+          <input type="hidden" name="q" value="{{ q }}">
+
+          <div class="form-field">
+            <label>Title</label>
+            <input type="text" name="title" value="{{ recipe_to_edit.title }}" required>
+          </div>
+
+          <div class="form-field">
+            <label>Instructions</label>
+            <textarea name="instructions" rows="6" required>{{ recipe_to_edit.instructions }}</textarea>
+          </div>
+
+          <div id="edit-ingredients">
+            {% for ing in ingredients_to_edit %}
+              <div class="form-field">
+                <label>Ingredient {{ loop.index }}</label>
+                <input name="ingredient_name_{{ loop.index0 }}" value="{{ ing.name }}" placeholder="Name">
+                <input name="ingredient_quantity_{{ loop.index0 }}" value="{{ ing.quantity }}" placeholder="Quantity">
+                <input name="ingredient_unit_{{ loop.index0 }}" value="{{ ing.unit }}" placeholder="Unit">
+                <input name="ingredient_image_{{ loop.index0 }}" value="{{ ing.image }}" placeholder="Image URL">
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="form-field" style="margin-top: 20px;">
+            <button type="submit" class="recipe-btn">💾 Save Changes</button>
+            <a href="{{ url_for('index_views.index_page', page=recipes.page, q=q, sort_by=sort_by) }}" class="recipe-btn" style="background-color: #EC5228;">Cancel</a>
+          </div>
+        </form>
+      </aside>
+    {% endif %}
+
   {% else %}
     <div class="meme-container">
       <div class="meme-card">
@@ -70,5 +172,32 @@
       </div>
     </div>
   {% endif %}
- 
+</div>
+{% if is_authenticated %}
+    <script>
+      const ingredientFields = document.getElementById("ingredient-fields");
+      const numIngredientsInput = document.querySelector("input[name='num-ingredients']");
+    
+      numIngredientsInput.addEventListener("input", () => {
+        const count = parseInt(numIngredientsInput.value) || 0;
+        ingredientFields.innerHTML = "<h4>Ingredients</h4>"; 
+    
+        for (let i = 0; i < count; i++) {
+          ingredientFields.innerHTML += `
+            <div class="ingredient">
+              <p>Ingredient ${i+ 1}</p>
+              <label>Name:</label>
+              <input name="ingredient_name_${i}">
+              <label>Quantity:</label>
+              <input name="ingredient_quantity_${i}">
+              <label>Unit:</label>
+              <input name="ingredient_unit_${i}">
+              <label>Image URL (optional):</label>
+              <input name="ingredient_image_${i}">
+            </div>
+          `;
+        }
+      });
+    </script>
+  {% endif %}
 {% endblock %}
