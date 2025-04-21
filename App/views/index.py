@@ -1,4 +1,5 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory, jsonify
+from flask_jwt_extended import jwt_required, current_user
 from App.controllers import *
 
 index_views = Blueprint('index_views', __name__, template_folder='../templates')
