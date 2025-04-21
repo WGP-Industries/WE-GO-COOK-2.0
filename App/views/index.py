@@ -71,3 +71,34 @@ def add_recipe():
     
     flash("Recipe added", "success")
     return redirect(url_for('index_views.index_page', page=page, q=q, sort_by = sort_by))
+
+@index_views.route('/updateRecipe/<int:id>', methods=['GET'])
+@jwt_required()
+def show_update_form(id):
+    recipe = get_recipe(id)
+
+    if not recipe or recipe.user_id != current_user.id:
+        return redirect(url_for('index_views.index_page'))
+
+    # Get page and search query from URL parameters
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", default='', type=str)
+    sort_by = request.args.get("sort_by", default='title_asc')
+
+
+    # Fetch paginated recipe list for the current user
+    paginated_recipes = get_recipes_by_user(current_user.id, page, 5, q, sort_by)
+    recipes_json = [r.get_json() for r in paginated_recipes.items]
+
+    return render_template(
+        'index.html',
+        current_user=current_user,
+        is_authenticated=True,
+        recipes=paginated_recipes,
+        recipes_json=recipes_json,
+        q=q,
+        num_ingredients=len(get_ingredients_by_recipe(id)),
+        ingredients_to_edit=get_ingredients_by_recipe(id),
+        recipe_to_edit=recipe,
+        sort_by = sort_by
+    )
