@@ -155,3 +155,25 @@ def update_recipe(id):
 
     flash("Recipe edited", "success")
     return redirect(url_for('index_views.index_page', page=page, q=q, sort_by = sort_by))
+
+
+@index_views.route('/deleteRecipe/<int:id>', methods=['GET'])
+@jwt_required()
+def delete_user_recipe(id):
+    recipe = get_recipe(id)
+
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", '')
+    sort_by = request.args.get("sort_by", default='title_asc')
+    
+
+    if recipe and recipe.user_id == current_user.id:
+        deleted = delete_recipe(id)
+        if deleted:
+            flash("Recipe deleted.", "success")
+        else:
+            flash("Recipe could not be deleted.", "error")
+    else:
+        flash("You are not authorized to delete this recipe.", "error")
+
+    return redirect(url_for('index_views.index_page', page=page, q=q, sort_by = sort_by))
