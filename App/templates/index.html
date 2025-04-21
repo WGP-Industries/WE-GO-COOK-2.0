@@ -1,13 +1,52 @@
 {% extends "layout.html" %}
-{% block title %}Flask MVC App{% endblock %}
-{% block page %}Flask MVC App{% endblock %}
+{% block title %}WE GO COOK{% endblock %}
+{% block page %}WE GO COOK{% endblock %}
 
 {{ super() }}
 
 {% block content %}
-    <h1>Flask MVC</h1>
-    {% if is_authenticated %}
-        <p> Welcome {{current_user.username}} </p>
-    {% endif %}
-    <p>This is a boileplate flask application which follows the MVC pattern for structuring the project.</p>
+<li>
+  <form method="GET" action="{{ url_for('index_views.index_page') }}" class="search-form">
+      <input type="search" name="q" placeholder="Search Recipes" value="{{ q }}" />
+      <button type="submit" class="search-bar"><i class="bi bi-search"></i></button>
+  </form>
+</li>    
+<div class="profile-container">
+  {% if is_authenticated %}
+    <p class="welcome-note">Welcome {{ current_user.username }}</p>
+    <input type="checkbox" id="recipe-toggle">
+    <label for="recipe-toggle" class="toggle-label">➕ Add New Recipe</label>
+
+    <aside class="slide-in-form">
+      <form method="POST" action="{{ url_for('index_views.add_recipe') }}">
+        <div class="form-field">
+          <label for="title">Title</label>
+          <input name="title" id="title" required>
+        </div>
+
+        <div class="form-field">
+          <label for="image">Image URL</label>
+          <input name="image" id="image">
+        </div>
+
+        <div class="form-field">
+          <label for="instructions">Instructions</label>
+          <textarea name="instructions" id="instructions" rows="5" required></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="num-ingredients">Number of Ingredients:</label>
+          <input name="num-ingredients" min = "1" required>
+        </div>
+
+        <div id="ingredient-fields">
+          <h4>Ingredients</h4>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button type="submit" class="recipe-btn">💾 Add Recipe</button>
+          <label for="recipe-toggle" class="recipe-btn" style="background-color: #EC5228; cursor: pointer;">Cancel</label>
+        </div>
+      </form>
+    </aside>
 {% endblock %}
