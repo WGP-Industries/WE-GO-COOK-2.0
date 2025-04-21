@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, send_from_directory, jsonify
+from flask import Blueprint, flash, redirect, render_template, request, send_from_directory, jsonify, url_for
 from flask_jwt_extended import jwt_required, current_user
 from App.controllers import *
 
@@ -166,7 +166,6 @@ def delete_user_recipe(id):
     q = request.args.get("q", '')
     sort_by = request.args.get("sort_by", default='title_asc')
     
-
     if recipe and recipe.user_id == current_user.id:
         deleted = delete_recipe(id)
         if deleted:
