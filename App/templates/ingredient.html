@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+{% block title %}WE GO COOK{% endblock %}
+{% block page %}WE GO COOK{% endblock %}
+
+{% block content %}
+<li>
+    <form method="GET" action="{{ url_for('ingredient_views.ingredient_page') }}" class="search-form">
+        <input type="search" name="q" placeholder="Search Ingredients" value="{{ q }}" />
+        <button type="submit" class="search-bar"><i class="bi bi-search"></i></button>
+    </form>
+</li>  
+
+{% if is_authenticated %}
+<input type="checkbox" id="recipe-toggle">
+<label for="recipe-toggle" class="toggle-label">➕ Add New Ingredient</label>
+
+<aside class="slide-in-form">
+  <form method="POST" action="{{ url_for('ingredient_views.add_ingredient') }}">
+    <div class="form-field">
+      <label for="name">Name</label>
+      <input name="name" id="name" required>
+    </div>
+
+    <div class="form-field">
+      <label for="quantity">Quantity</label>
+      <input name="quantity" id="quantity" type="number" min="0" step="any" required>
+    </div>
+
+    <div class="form-field">
+      <label for="unit">Unit</label>
+      <input name="unit" id="unit" placeholder="e.g. grams, ml, cups" required>
+    </div>
+
+    <div class="form-field">
+      <label for="image">Image URL</label>
+      <input name="image" id="image">
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button type="submit" class="recipe-btn">💾 Add Ingredient</button>
+      <label for="recipe-toggle" class="recipe-btn" style="background-color: #EC5228; cursor: pointer;">Cancel</label>
+    </div>
+  </form>
+</aside>
+
+
+<form method="get" action="{{ url_for('ingredient_views.ingredient_page') }}" style="display: block; visibility: visible; opacity: 1; z-index: 999;">
+    <p style="color: white;">
+      <strong>Sort Ingredients:</strong>
+      <select class= "sort-recipes-select" name="sort_by" onchange="this.form.submit()" style="border-color: #EC5228; display: inline-block; background: rgba(255, 178, 0, 0.6); color: black; z-index: 999;">
+        <option value="id_asc" {% if sort_by == 'id_asc' %}selected{% endif %}>ID ↑(asc)</option>
+        <option value="id_desc" {% if sort_by == 'id_desc' %}selected{% endif %}>ID ↓(desc)</option>
+        <option value="title_asc" {% if sort_by == 'title_asc' %}selected{% endif %}>Name A–Z</option>
+        <option value="title_desc" {% if sort_by == 'title_desc' %}selected{% endif %}>Name Z–A</option>
+        <option value="quantity_asc" {% if sort_by == 'quantity_asc' %}selected{% endif %}>Quantity ↑(asc)</option>
+        <option value="quantity_desc" {% if sort_by == 'quantity_desc' %}selected{% endif %}>Quantity ↓(desc)</option>
+      </select>
+      <input type="hidden" name="q" value="{{ q }}">
+    </p>
+</form>
+
+
+
+
+{% if ingredients.items|length == 0 %}
+  <p style="color: #D91656; font-weight: bold;">You have no ingredients saved yet.</p>
+{% else %}
+<h1 class ="inventory-header" style="color: #d97b16d7; font-weight: bold;  ">Ingredients Stock</h1>
+<div class="ingredient-container">
+    {% for ingredient in ingredients.items %}
+      <div class="ingredient-card">
+        <!-- Ingredient Image -->
+        {% if ingredient.image%}
+          <img src="{{ ingredient.image }}" alt="{{ ingredient.name }} image" class="ingredient-img">
+        {% else %}
+          <img src="https://img.freepik.com/free-photo/fresh-vegetables-colorful-pasta-with-mushroom-garlic-pepper-white-surface_176474-312.jpg?t=st=1745179842~exp=1745183442~hmac=a3cbf1f05236fff3910f2174d3e6c2e53478941ad2ebf0d84500872e6e22e32e&w=1380" alt="Default image" class="ingredient-img">
+        {% endif %}
+  
+        <h3>{{ ingredient.name }}</h3>
+        <p>ID: {{ ingredient.id }}</p>
+        <p>Quantity: {{ ingredient.quantity }} {{ ingredient.unit }}</p>
+        
+        <div class="button-container">
+          <form method="GET" action="{{ url_for('ingredient_views.show_ingredient_update_form', id=ingredient.id) }}">
+            <input type="hidden" name="page" value="{{ ingredients.page }}">
+            <input type="hidden" name="q" value="{{ q }}">
+            <input type="hidden" name="sort_by" value="{{ sort_by }}">
+            <button class="recipe-btn" type="submit">✏️ Edit/View Ingredient</button>
+          </form>
+  
+          <form method="GET" action="{{ url_for('ingredient_views.delete_ingredient_route', id=ingredient.id) }}">
+            <input type="hidden" name="page" value="{{ ingredients.page }}">
+            <input type="hidden" name="q" value="{{ q }}">
+            <input type="hidden" name="sort_by" value="{{ sort_by }}">
+            <button class="recipe-btn" type="submit">🗑 Delete Ingredient</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  
+{% endif %}
+
+
+<div class="pagination">
+    <ul>
+      {% if ingredients.has_prev %}
+        <li><a class="pagination-link" href="{{ url_for('ingredient_views.ingredient_page', page=ingredients.prev_num, q=q, sort_by=sort_by) }}"><i class="bi bi-arrow-left"></i></a></li>
+      {% else %}
+        <li><span class="pagination-link disabled"><i class="bi bi-arrow-left"></i></span></li>
+      {% endif %}
+
+      {% for page_num in ingredients.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+          {% if ingredients.page == page_num %}
+            <li><span class="pagination-link active-page">{{ page_num }}</span></li>
+          {% else %}
+            <li><a class="pagination-link" href="{{ url_for('ingredient_views.ingredient_page', page=page_num, q=q, sort_by=sort_by) }}">{{ page_num }}</a></li>
+          {% endif %}
+        {% else %}
+          <li><span class="pagination-link disabled">…</span></li>
+        {% endif %}
+      {% endfor %}
+
+      {% if ingredients.has_next %}
+        <li><a class="pagination-link" href="{{ url_for('ingredient_views.ingredient_page', page=ingredients.next_num, q=q, sort_by=sort_by) }}"><i class="bi bi-arrow-right"></i></a></li>
+      {% else %}
+        <li><span class="pagination-link disabled"><i class="bi bi-arrow-right"></i></span></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% else %}
+  <div class="meme-container">
+    <div class="meme-card">
+      <img src="https://media.makeameme.org/created/why-is-there-7e933763f7.jpg" alt="Why is there" />
+    </div>
+  </div>
+
+  {% endif %}
+  {% if ingredient_to_edit %}
+  <aside class="recipe-aside" style="display: block;">
+    <form method="POST" action="{{ url_for('ingredient_views.update_ingredient', id=ingredient_to_edit.id) }}">
+        <input type="hidden" name="page" value="{{ ingredients.page }}">
+        <input type="hidden" name="q" value="{{ q }}">
+
+        <div class="form-field">
+          <label>Name</label>
+          <input type="text" name="name" value="{{ ingredient_to_edit.name }}" required>
+        </div>
+
+        <div class="form-field">
+          <label>Quantity</label>
+          <input type="text" name="quantity" value="{{ ingredient_to_edit.quantity }}" required>
+        </div>
+
+        <div class="form-field">
+          <label>Unit</label>
+          <textarea name="unit" rows="6" required>{{ ingredient_to_edit.unit}}</textarea>
+        </div>
+
+        
+         <div class="form-field">
+            <label for="image">Image URL</label>
+            <input name="image" id="image">
+         </div>
+
+        <div class="form-field" style="margin-top: 20px;">
+          <button type="submit" class="recipe-btn">💾 Save Changes</button>
+          <a href="{{ url_for('ingredient_views.ingredient_page', page=ingredients.page, q=q, sort_by=sort_by) }}" class="recipe-btn" style="background-color: #EC5228;">Cancel</a>
+        </div>
+    </form>
+
+    
+  </aside>
+{% endif %}
+
+{% endblock %}
