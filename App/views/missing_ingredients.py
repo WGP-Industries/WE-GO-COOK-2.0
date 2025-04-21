@@ -13,3 +13,36 @@ from App.controllers import (
   
 )
 
+@missing_ingredients_views.route('/missing_ingredients', methods=['GET'])
+@jwt_required()
+def missing_ingredients_page():
+    user = current_user
+    is_authenticated = user is not None
+    q = request.args.get("q", default='', type=str)
+    sort_by = request.args.get("sort_by", default='title_asc')
+
+    all_missing = get_recipes_missing_ingredients(user.id)
+
+    
+    if q:
+        all_missing = [entry for entry in all_missing if q.lower() in entry["recipe"].title.lower()]
+
+    if sort_by == "title_asc":
+        all_missing.sort(key=lambda x: x["recipe"].title.lower())
+    elif sort_by == "title_desc":
+        all_missing.sort(key=lambda x: x["recipe"].title.lower(), reverse=True)
+    elif sort_by == "id_asc":
+        all_missing.sort(key=lambda x: x["recipe"].id)
+    elif sort_by == "id_desc":
+        all_missing.sort(key=lambda x: x["recipe"].id, reverse=True)
+
+    return render_template(
+        "missing_ingredients.html",
+        current_user=user,
+        is_authenticated=is_authenticated,
+        recipes=all_missing,
+        q=q,
+        sort_by=sort_by,
+        num_recipes=len(all_missing)
+    )
+
