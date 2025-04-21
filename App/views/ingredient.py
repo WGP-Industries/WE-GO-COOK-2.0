@@ -63,3 +63,30 @@ def add_ingredient():
 
     flash("Ingredient added", "success")
     return redirect(url_for('ingredient_views.ingredient_page', page=page, q=q, sort_by=sort_by))
+
+
+@ingredient_views.route('/updateIngredient/<int:id>', methods=['GET'])
+@jwt_required()
+def show_ingredient_update_form(id):
+    ingredient = get_user_ingredient(id)
+    print("testing")
+    if not ingredient or ingredient.user_id != current_user.id:
+        return redirect(url_for('ingredient_views.ingredient_page'))
+
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", default='', type=str)
+    sort_by = request.args.get("sort_by", default='title_asc')
+
+    paginated_ingredients = get_ingredients_by_user(current_user.id, page, 5, q, sort_by)
+    ingredients_json = [i.get_json() for i in paginated_ingredients.items]
+
+    return render_template(
+        'ingredient.html',
+        current_user=current_user,
+        is_authenticated=True,
+        ingredients=paginated_ingredients,
+        ingredients_json=ingredients_json,
+        ingredient_to_edit=ingredient,
+        q=q,
+        sort_by=sort_by
+    )
