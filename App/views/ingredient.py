@@ -37,3 +37,29 @@ def ingredient_page():
         sort_by=sort_by,
         num_ingredients=len(ingredients_json)
     )
+
+
+# route to add ingredient
+@ingredient_views.route('/addingredient', methods=['POST'])
+@jwt_required()
+def add_ingredient():
+    name = request.form.get('name')
+    quantity = request.form.get('quantity')
+    unit = request.form.get('unit')
+    image = request.form.get('image') or ""
+    user_id = current_user.id
+
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", default='', type=str)
+    sort_by = request.args.get("sort_by", default='title_asc')
+
+    if not name or not quantity or not unit:
+        flash("Missing required fields", "error")
+        return redirect(url_for('ingredient_views.ingredient_page', page=page, q=q, sort_by=sort_by))
+
+    
+    ingredient = create_ingredient(name=name, quantity=quantity, unit=unit, image=image, user_id=user_id)
+
+
+    flash("Ingredient added", "success")
+    return redirect(url_for('ingredient_views.ingredient_page', page=page, q=q, sort_by=sort_by))
