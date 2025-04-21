@@ -7,3 +7,33 @@ from App.controllers import (
      get_ingredients_by_user, update_user_ingredient,
      create_ingredient,  get_user_ingredient,  delete_user_ingredient
 )
+
+@ingredient_views.route('/ingredient', methods=['GET'])
+@jwt_required(optional=True)
+def ingredient_page():
+    user = current_user if current_user else None
+    is_authenticated = user is not None
+
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", default='', type=str)
+    sort_by = request.args.get("sort_by", default='title_asc')
+
+    if user:
+        paginated_ingredients = get_ingredients_by_user(user.id, page, 5, q, sort_by)
+ 
+        ingredients_json = [i.get_json() for i in paginated_ingredients.items]
+    else:
+
+        paginated_ingredients = [""]
+        ingredients_json = [""]
+
+    return render_template(
+        'ingredient.html',
+        current_user=user,
+        is_authenticated=is_authenticated,
+        ingredients=paginated_ingredients,
+        ingredients_json=ingredients_json,
+        q=q,
+        sort_by=sort_by,
+        num_ingredients=len(ingredients_json)
+    )
