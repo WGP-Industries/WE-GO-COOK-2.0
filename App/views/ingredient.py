@@ -112,3 +112,28 @@ def update_ingredient(id):
 
     flash("Ingredient updated successfully", "success")
     return redirect(url_for('ingredient_views.ingredient_page', page=page, q=q, sort_by=sort_by))
+
+
+@ingredient_views.route('/deleteIngredient/<int:id>', methods=['GET'])
+@jwt_required()
+def delete_ingredient_route(id):
+    ingredient = get_user_ingredient(id)
+
+    page = request.args.get("page", 1, type=int)
+    q = request.args.get("q", '')
+    sort_by = request.args.get("sort_by", default='title_asc')
+  
+    if ingredient is None:
+        flash("Ingredient not found", "error")
+        return redirect(url_for("ingredient_views.ingredient_page"))
+
+    if ingredient.user_id == current_user.id:
+        deleted = delete_user_ingredient(id)
+        if deleted:
+            flash("Ingredient deleted.", "success")
+        else:
+            flash("Ingredient could not be deleted.", "error")
+    else:
+        flash("You are not authorized to delete this ingredient.", "error")
+
+    return redirect(url_for('ingredient_views.ingredient_page', page=page, q=q, sort_by=sort_by))
