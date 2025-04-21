@@ -72,6 +72,8 @@ def add_recipe():
     flash("Recipe added", "success")
     return redirect(url_for('index_views.index_page', page=page, q=q, sort_by = sort_by))
 
+
+#We gotta make sure this works first
 @index_views.route('/updateRecipe/<int:id>', methods=['GET'])
 @jwt_required()
 def show_update_form(id):
