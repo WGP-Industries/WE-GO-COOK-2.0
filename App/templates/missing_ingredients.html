@@ -1,1 +1,64 @@
+{% extends "layout.html" %}
+{% block title %}WE GO COOK{% endblock %}
+{% block page %}WE GO COOK{% endblock %}
+
+{% block content %}
+<li>
+  <form method="GET" action="{{ url_for('missing_ingredients_views.missing_ingredients_page') }}" class="search-form">
+      <input type="search" name="q" placeholder="Search Recipes" value="{{ q }}" />
+      <button type="submit" class="search-bar"><i class="bi bi-search"></i></button>
+  </form>
+</li>  
+
+{% if is_authenticated %}
+
+
+<form method="get" action="{{ url_for('missing_ingredients_views.missing_ingredients_page') }}" style="display: block; visibility: visible; opacity: 1; z-index: 999;">
+  <p style="color: white;">
+    <strong>Sort Ingredients:</strong>
+    <select class= "sort-recipes-select" name="sort_by" onchange="this.form.submit()" style="border-color: #EC5228; display: inline-block; background: rgba(255, 178, 0, 0.6); color: black; z-index: 999;">
+      <option value="id_asc" {% if sort_by == 'id_asc' %}selected{% endif %}>ID ↑(asc)</option>
+      <option value="id_desc" {% if sort_by == 'id_desc' %}selected{% endif %}>ID ↓(desc)</option>
+      <option value="title_asc" {% if sort_by == 'title_asc' %}selected{% endif %}>Name A–Z</option>
+      <option value="title_desc" {% if sort_by == 'title_desc' %}selected{% endif %}>Name Z–A</option>
+    </select>
+    <input type="hidden" name="q" value="{{ q }}">
+  </p>
+</form>
+
+{% if recipes|length == 0 %}
+  <p style="color: #D91656; font-weight: bold;">You're not missing ingredients for any recipes! 😊</p>
+{% else %}
+  <h1 class="inventory-header" style="color: #d97b16d7; font-weight: bold;">Recipes You're Missing Ingredients For ({{ num_recipes }})</h1>
+  <div class="recipe-container">
+    {% for entry in recipes %}
+      <div class="ingredient-card">
+        <h3>{{ entry.recipe.title }}</h3>
+        {% if entry.recipe.image %}
+          <img src="{{ entry.recipe.image }}" alt="{{ entry.recipe.title }} image" class="ingredient-img">
+        {% endif %}
+
+        <h4 style="color: #EC5228;">Missing Ingredients:</h4>
+        <ul>
+          {% for item in entry.missing_ingredients %}
+            <li>
+              <strong>{{ item.name }}</strong> — You have {{ item.available }} / Need {{ item.required }} {{ item.unit }}
+
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+{% else %}
+<div class="meme-container">
+  <div class="meme-card">
+    <img src="https://media.makeameme.org/created/why-is-there-7e933763f7.jpg" alt="Why is there" />
+  </div>
+</div>
+{% endif %}
+{% endblock %}
 
