@@ -31,14 +31,17 @@ def index_page():
         num_ingredients=1
     )
 
+
 @index_views.route('/init', methods=['GET'])
 def init():
     initialize()
     return jsonify(message='db initialized!')
 
+
 @index_views.route('/health', methods=['GET'])
 def health_check():
     return jsonify({'status':'healthy'})
+
 
 @index_views.route('/addRecipe', methods=['POST'])
 @jwt_required()
@@ -58,7 +61,6 @@ def add_recipe():
 
     recipe = create_recipe(title, instructions, user_id, image)
 
-    
     num_ingredients = int(request.form.get('num-ingredients') or 1)
 
     for i in range(num_ingredients):
@@ -104,3 +106,52 @@ def show_update_form(id):
         recipe_to_edit=recipe,
         sort_by = sort_by
     )
+
+
+@index_views.route('/updateRecipe/<int:id>', methods=['POST'])
+@jwt_required()
+def update_recipe(id):
+    recipe = get_recipe(id)
+
+    page = int(request.form.get("page", 1))
+    q = request.form.get("q", '')
+    sort_by = request.args.get("sort_by", default='title_asc')
+
+    if not recipe or recipe.user_id != current_user.id:
+        return redirect(url_for('index_views.index_page'))
+
+    # Update recipe title and instructions
+    new_title = request.form.get('title')
+    new_instructions = request.form.get('instructions')
+
+    if not new_title or not new_instructions:
+        return redirect(url_for('index_views.show_update_form', id=id, page = page, q=q, sort_by = sort_by))
+
+    update_recipe_title(recipe.id, new_title)
+    update_recipe_instructions(recipe.id, new_instructions)
+
+    # Update ingredients
+    ingredients = get_ingredients_by_recipe(recipe.id)
+
+    for index, ingredient in enumerate(ingredients):
+        name_key = f'ingredient_name_{index}'
+        quantity_key = f'ingredient_quantity_{index}'
+        image_key = f'ingredient_image_{index}'
+        unit_key = f'ingredient_unit_{index}'
+
+        new_name = request.form.get(name_key)
+        new_quantity = request.form.get(quantity_key)
+        new_image = request.form.get(image_key)
+        new_unit = request.form.get(unit_key)
+
+        if new_name:
+            update_ingredient_name(ingredient.id, new_name)
+        if new_quantity:
+            update_ingredient_quantity(ingredient.id, new_quantity)
+        if new_unit:
+            update_ingredient_unit(ingredient.id, new_unit)
+        if new_image is not None:
+            update_ingredient_image(ingredient.id, new_image)
+
+    flash("Recipe edited", "success")
+    return redirect(url_for('index_views.index_page', page=page, q=q, sort_by = sort_by))
